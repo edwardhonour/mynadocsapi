@@ -1,0 +1,296 @@
+<?php
+ini_set('memory_limit', -1);
+
+require 'vendor/autoload.php';
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+require_once('/var/www/classes/class.XRDB.php');
+require_once('class.enrollment2.php');
+
+ini_set('display_errors',1);
+ini_set('display_startup_errors',1);
+
+function getAgencyCommissionReport($billingCycle,$agency_id)
+{
+	$X=new XRDB();
+
+
+$spreadsheet = new Spreadsheet();
+$spreadsheet->getActiveSheet()->setTitle('Agency Commission Report');
+
+$styleArrayEnrollment = [
+        'font' => [
+        'bold' => true,
+        ],
+        'alignment' => [
+        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+        ],
+        'borders' => [
+                'top' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'bottom' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'left' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'right' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+],
+'fill' => [
+        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+],
+];
+
+
+$styleArrayLine = [
+    'alignment' => [
+        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT,
+        'height' => '10',
+    ],
+    'borders' => [
+        'top' => [
+            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'bottom' => [
+            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'left' => [
+            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'right' => [
+            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+    ],
+    'fill' => [
+        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+    ],
+];
+
+
+	$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('A1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('A1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('A1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('A1', "Agency ID");
+
+	$spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(40);
+        $spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('B1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('B1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('B1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('B1', "Agency Name");
+
+	$spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getStyle('C1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('C1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('C1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('C1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('C1', "Company ID");
+	
+	$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(40);
+        $spreadsheet->getActiveSheet()->getStyle('D1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('D1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('D1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('D1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('D1', "Company Name");
+
+	$spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getStyle('E1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('E1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('E1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('E1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('E1', "Plan Type");
+		
+	$spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getStyle('F1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('F1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('F1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('F1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('F1', "Rate");
+		
+	$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getStyle('G1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('G1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('G1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('G1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('G1', "Commssion Type");
+	 	
+	$spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(20);
+        $spreadsheet->getActiveSheet()->getStyle('H1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('H1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('H1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('H1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('H1', "Basis");
+	 	
+	$spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getStyle('I1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('I1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('I1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('I1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('I1', "Invoice Paid");
+	 	
+	$spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(20);
+        $spreadsheet->getActiveSheet()->getStyle('J1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('J1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('J1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('J1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('J1', "Commission");
+	 	
+	$spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getStyle('K1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('K1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('K1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('K1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('K1', "Commission Paid");
+	 	
+	$sql="select id, org_name from nua_agency where id = " . $agency_id . " order by org_name ";
+	$eft=$X->sql($sql);
+
+        $row=1;
+
+        foreach($eft as $eftRow) {
+		
+		$commission_total=0;
+            $row++;
+            $cell="A".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $eftRow['id']);
+	
+		
+            $cell="B".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $eftRow['org_name']);
+	
+	$sql="select nua_agency_company.company_id as id, nua_company.company_name as company_name, plan_type, commission_rate, commission_type from ";
+		$sql.="nua_agency_company, nua_company where nua_agency_company.agency_id = " . $eftRow['id']; 
+		$sql.=" and nua_agency_company.company_id = nua_company.id order by nua_company.company_name";
+
+		$c=$X->sql($sql);
+
+		foreach($c as $comp) {
+	
+	
+
+		if ($comp['commission_type']=="FLAT") {
+			$sql="select count(*) as c from nua_monthly_member_census where month_id = '" . $billingCycle . "' and company_id = " . $comp['id'];
+			$sql.=" and plan_type = '" . $comp['plan_type'] . "' and dependent_code = ''";
+			$b=$X->sql($sql);
+			$basis=floatval($b[0]['c']);
+		} else {
+			$sql="select coverage_price from nua_monthly_member_census where month_id = '" . $billingCycle . "' and company_id = " . $comp['id'];
+			$sql.=" and plan_type = '" . $comp['plan_type'] . "' and dependent_code = ''";
+			$b=$X->sql($sql);
+			$total=0;
+			foreach($b as $c) {
+                             $total+=floatval($c['coverage_price']);
+			}
+			$basis=$total;
+		}
+		$sql="select id, paid from nua_company_invoice where company_id = " . $comp['id'] . " and month_id = '" . $billingCycle . "'";
+		$gg=$X->sql($sql);
+		if (sizeof($gg)==0) {
+			$p="No";
+		} else {
+		        $p=$gg[0]['paid'];
+			if ($p=='N') $p="No";
+			if ($p=='Y') $p="Yes";
+		}
+		$commission=0;
+		if ($p=='No') {
+			$commission=0;
+			$commission_paid="No";
+		} else {
+		     $commission=$basis*$comp['commission_rate'];
+		     if (sizeof($gg)>0) {
+		         $sql="select count(*) as c from nua_agency_paid where agency_id = " . $eftRow['id'];
+		         $sql.=" and invoice_id = " . $gg[0]['id'] . " and plan_type = '" . $comp['plan_type'] . "'";
+		         $h=$X->sql($sql);
+		         if ($h[0]['c']>0) { 
+			     $commission_paid="Yes";
+		         } else {
+			     $commission_paid="No";
+		         }
+		     } else {
+			     $commission_paid="No";
+	             }
+		}
+		if ($commission_paid=="No") {
+			$commission_total+=$commission;
+			$row++;
+                         $cell="C".$row;
+                         $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	                 $spreadsheet->getActiveSheet()->setCellValue($cell, $comp['id']);
+                $cell="D".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $comp['company_name']);
+                $cell="E".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $comp['plan_type']);
+                $cell="F".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $comp['commission_rate']);
+		$comm_rate=floatval($comp['commission_rate']);
+                $cell="G".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $comp['commission_type']);
+                $cell="H".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $basis);
+                $cell="I".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $p);
+                $cell="J".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, "$" . number_format($commission,2));
+                $cell="K".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $commission_paid);
+		}
+
+		}
+		$row++;
+                        $cell="J".$row;
+                        $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	                $spreadsheet->getActiveSheet()->setCellValue($cell, "$" . number_format($commission_total,2));
+		$row++;
+
+	}
+
+
+$spreadsheet->setActiveSheetIndex(0);
+$writer = new Xlsx($spreadsheet);
+$filename="Commission_Report.xlsx";
+
+    header('Content-disposition: attachment; filename=' . $filename);
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8');
+    header('Cache-Control: must-revalidate');
+    sleep(1);
+    $writer->save("php://output");
+    die();
+
+}
+
+
+
+$X=new XRDB();
+$E=new ENROLLMENT();
+if (isset($_GET['billingCycle'])) {
+	$billingCycle = $_GET['billingCycle'];
+  }
+else
+{
+   echo("Billing cycle not provided");
+   die();
+}
+
+$agency_id = $_GET['agency_id'];
+getAgencyCommissionReport($billingCycle,$agency_id);
+
+?>
+
+

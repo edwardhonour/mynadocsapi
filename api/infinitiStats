@@ -1,0 +1,220 @@
+function infinitiStats($billingCycle)
+{
+	$X=new XRDB();
+
+
+$spreadsheet = new Spreadsheet();
+$spreadsheet->getActiveSheet()->setTitle('Plan Utilization');
+
+$styleArrayEnrollment = [
+        'font' => [
+        'bold' => true,
+        ],
+        'alignment' => [
+        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+        ],
+        'borders' => [
+                'top' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'bottom' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'left' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'right' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+],
+'fill' => [
+        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+],
+];
+
+
+$styleArrayLine = [
+    'alignment' => [
+        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT,
+        'height' => '10',
+    ],
+    'borders' => [
+        'top' => [
+            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'bottom' => [
+            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'left' => [
+            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+        'right' => [
+            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+        ],
+    ],
+    'fill' => [
+        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+    ],
+];
+
+
+	$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('A1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('A1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('A1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('A1', "Category");
+
+	$spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(50);
+        $spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('B1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('B1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('B1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('B1', "Client Plan");
+
+	$spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(25);
+        $spreadsheet->getActiveSheet()->getStyle('C1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('C1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('C1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('C1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('C1', "EE Count");
+	
+	$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(25);
+        $spreadsheet->getActiveSheet()->getStyle('D1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('D1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('D1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('D1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('D1', "ES Count");
+
+	$spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(25);
+        $spreadsheet->getActiveSheet()->getStyle('E1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('E1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('E1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('E1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('E1', "EC Count");
+		
+	$spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(25);
+        $spreadsheet->getActiveSheet()->getStyle('F1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('F1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('F1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('F1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('F1', "FAM Count");
+		
+	$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(25);
+        $spreadsheet->getActiveSheet()->getStyle('G1')->applyFromArray($styleArrayEnrollment);
+        $spreadsheet->getActiveSheet()->getStyle('G1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('G1')->getFill()->getStartColor()->setARGB('FFFFCC66');
+        $spreadsheet->getActiveSheet()->getStyle('G1')->getAlignment()->setWrapText(true);
+	$spreadsheet->getActiveSheet()->setCellValue('G1', "Total Count");
+		
+	$plan_type=array();
+        array_push($plan_type,'ESSENTIAL');
+        array_push($plan_type,'PREMIER');
+        array_push($plan_type,'PRIME');
+        array_push($plan_type,'COPPER');
+        array_push($plan_type,'BRONZE');
+        array_push($plan_type,'SILVER');
+        array_push($plan_type,'GOLD');
+        array_push($plan_type,'PLATINUM');
+
+        $row=1;
+	foreach($plan_type as $t) {
+
+	$sql="select distinct client_plan from ";
+	$sql.=" nua_monthly_member_census where month_id = '" . $billingCycle . "' ";
+	$sql.=" and company_id in (select id from nua_company where org_id in (17)) and plan_type = '*MEDICAL*' ";
+	$sql.=" and client_plan like '%" . $t . "%' order by client_plan";
+	$eft=$X->sql($sql);
+
+
+        foreach($eft as $e) {
+		
+		$sql="select count(*) as c from ";
+	        $sql.=" nua_monthly_member_census where month_id = '" . $billingCycle . "' ";
+	        $sql.=" and company_id in (select id from nua_company where org_id in (17)) and plan_type = '*MEDICAL*' ";
+	        $sql.=" and client_plan = '" . $e['client_plan']  . "'";
+	        $data=$X->sql($sql);
+
+		$total=$data['c'];
+
+		$sql="select count(*) as c from ";
+	        $sql.=" nua_monthly_member_census where month_id = '" . $billingCycle . "' ";
+	        $sql.=" and company_id in (select id from nua_company where org_id in (17)) and plan_type = '*MEDICAL*' ";
+	        $sql.=" and coverage_level in ('EE','SI') and client_plan = '" . $e['client_plan']  . "'";
+
+	        $data=$X->sql($sql);
+
+		$ee=$data['c'];
+
+		$sql="select count(*) as c from ";
+	        $sql.=" nua_monthly_member_census where month_id = '" . $billingCycle . "' ";
+	        $sql.=" and company_id in (select id from nua_company where org_id in (17)) and plan_type = '*MEDICAL*' ";
+	        $sql.=" and coverage_level in ('ES','ES2') and client_plan = '" . $e['client_plan']  . "'";
+	        $data=$X->sql($sql);
+
+		$es=$data['c'];
+
+		$sql="select count(*) as c from ";
+	        $sql.=" nua_monthly_member_census where month_id = '" . $billingCycle . "' ";
+	        $sql.=" and company_id in (select id from nua_company where org_id in (17)) and plan_type = '*MEDICAL*' ";
+	        $sql.=" and coverage_level in ('EC','EC2') and client_plan = '" . $e['client_plan']  . "'";
+	        $data=$X->sql($sql);
+
+		$ec=$data['c'];
+
+		$sql="select count(*) as c from ";
+	        $sql.=" nua_monthly_member_census where month_id = '" . $billingCycle . "' ";
+	        $sql.=" and company_id in (select id from nua_company where org_id in (17)) and plan_type = '*MEDICAL*' ";
+	        $sql.=" and coverage_level in ('FAM','FA') and client_plan = '" . $e['client_plan']  . "'";
+	        $data=$X->sql($sql);
+
+		$fam=$data['c'];
+
+            $row++;
+            $cell="A".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $plan_type);
+	
+		
+            $cell="B".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $t['client_plan']);
+	
+	
+            $cell="C".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $ee);
+	
+            $cell="D".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $es);
+	
+	
+            $cell="E".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $ec);
+
+		
+            $cell="F".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $fam);
+		
+            $cell="G".$row;
+                $spreadsheet->getActiveSheet()->getStyle($cell)->applyFromArray($styleArrayLine);
+	        $spreadsheet->getActiveSheet()->setCellValue($cell, $total);
+
+	}
+	}
+$spreadsheet->setActiveSheetIndex(0);
+$writer = new Xlsx($spreadsheet);
+$filename="Enrollment_Stats_Invoice_Report.xlsx";
+
+    header('Content-disposition: attachment; filename=' . $filename);
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8');
+    header('Cache-Control: must-revalidate');
+    sleep(1);
+    $writer->save("php://output");
+    die();
+
+}
+

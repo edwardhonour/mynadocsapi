@@ -1,0 +1,17 @@
+function getMonthId() {
+      $date=date_create();
+      $current_month=date_format($date,'Y-m');
+      if ($current_month=="2021-10") $current_month_id="2021-11";
+      if ($current_month=="2021-11") $current_month_id="2021-12";
+      if ($current_month=="2021-12") $current_month_id="2022-01";
+      if ($current_month=="2022-01") $current_month_id="2022-02";
+      if ($current_month=="2022-02") $current_month_id="2022-03";
+      if ($current_month=="2022-03") $current_month_id="2022-04";
+      if ($current_month=="2022-04") $current_month_id="2022-05";
+      if ($current_month=="2022-05") $current_month_id="2022-06";
+      if ($current_month=="2022-06") $current_month_id="2022-07";
+      if ($current_month=="2022-07") $current_month_id="2022-08";
+      if ($current_month=="2022-08") $current_month_id="2022-09";
+      return $current_month_id;
+}
+
